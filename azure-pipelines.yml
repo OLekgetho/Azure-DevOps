@@ -1,9 +1,11 @@
 # Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+# This pipeline will trigger on every push to the repository.
+# Modify the trigger to match your needs.
 
-trigger: none
+trigger:
+  branches:
+    include:
+      - '*'  # This will trigger the pipeline for any branch push.
 
 pool:
   vmImage: ubuntu-latest
@@ -18,16 +20,18 @@ stages:
             displayName: tfinstall
             inputs:
               terraformVersion: 'latest'
+
           - task: TerraformTaskV4@4
             displayName: init
             inputs:
               provider: 'azurerm'
               command: 'init'
-              backendServiceArm: 'Azure for Students(da85fef0-6730-40ea-85a0-3e35e72f052e)'
+              backendServiceArm: '<azure>'
               backendAzureRmResourceGroupName: $(bkendrg)
               backendAzureRmStorageAccountName: $(bkendstrge)
               backendAzureRmContainerName: $(bkendcont)
               backendAzureRmKey: $(bkendkey)
+
           - task: TerraformTaskV4@4
             displayName: validate
             inputs:
@@ -43,31 +47,29 @@ stages:
            - task: TerraformInstaller@1
              displayName: tfinstall
              inputs:
-              terraformVersion: 'latest'
+               terraformVersion: 'latest'
 
            - task: TerraformTaskV4@4
              displayName: init
              inputs:
-              provider: 'azurerm'
-              command: 'init'
-              backendServiceArm: 'Azure for Students(da85fef0-6730-40ea-85a0-3e35e72f052e)'
-              backendAzureRmResourceGroupName: $(bkendrg)
-              backendAzureRmStorageAccountName: $(bkendstrge)
-              backendAzureRmContainerName: $(bkendcont)
-              backendAzureRmKey: $(bkstrgkey)
+               provider: 'azurerm'
+               command: 'init'
+               backendServiceArm: '<azure>'
+               backendAzureRmResourceGroupName: $(bkendrg)
+               backendAzureRmStorageAccountName: $(bkendstrge)
+               backendAzureRmContainerName: $(bkendcont)
+               backendAzureRmKey: $(bkstrgkey)
 
-           
            - task: TerraformTaskV4@4
              displayName: plan
              inputs:
                provider: 'azurerm'
                command: 'plan'
-               environmentServiceNameAzureRM: 'Azure for Students(da85fef0-6730-40ea-85a0-3e35e72f052e)'
-          
+               environmentServiceNameAzureRM: '<azure>'
+
            - task: TerraformTaskV4@4
              displayName: apply
              inputs:
                provider: 'azurerm'
                command: 'apply'
-               environmentServiceNameAzureRM: 'Azure for Students(da85fef0-6730-40ea-85a0-3e35e72f052e)'
-
+               environmentServiceNameAzureRM: '<azure>'
